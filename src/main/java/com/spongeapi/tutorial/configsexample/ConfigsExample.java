@@ -71,8 +71,8 @@ public class ConfigsExample {
         // Установить ItemStack с зачарованиями, сохранить, получить.
         ItemStack sword = ItemStack.of(ItemTypes.DIAMOND_SWORD, 1);
         EnchantmentData enchantmentData = sword.getOrCreate(EnchantmentData.class).get();
-        enchantmentData.addElement(new ItemEnchantment(Enchantments.FIRE_ASPECT, 1));
-        enchantmentData.addElement(new ItemEnchantment(Enchantments.SHARPNESS, 1000));
+        enchantmentData.addElement(ItemEnchantment.of(Enchantments.FIRE_ASPECT, 1)); // API7, API6 - new ItemEnchantment(Enchantment,int)
+        enchantmentData.addElement(ItemEnchantment.of(Enchantments.SHARPNESS, 1000));
         sword.offer(enchantmentData);
 
         defaultWayNode.getNode("mySword").setValue(TypeToken.of(ItemStack.class), sword);
