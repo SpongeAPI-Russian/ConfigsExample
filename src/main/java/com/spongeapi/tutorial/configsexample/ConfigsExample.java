@@ -71,8 +71,8 @@ public class ConfigsExample {
         // Установить ItemStack с зачарованиями, сохранить, получить.
         ItemStack sword = ItemStack.of(ItemTypes.DIAMOND_SWORD, 1);
         EnchantmentData enchantmentData = sword.getOrCreate(EnchantmentData.class).get();
-        enchantmentData.addElement(ItemEnchantment.of(Enchantments.FIRE_ASPECT, 1)); // API7, API6 - new ItemEnchantment(Enchantment,int)
-        enchantmentData.addElement(ItemEnchantment.of(Enchantments.SHARPNESS, 1000));
+        enchantmentData.addElement(new ItemEnchantment(Enchantments.FIRE_ASPECT, 1)); // API7 ItemEnchantment.of(Enchantment,int), API6 - new ItemEnchantment(Enchantment,int)
+        enchantmentData.addElement(new ItemEnchantment(Enchantments.SHARPNESS, 1000));
         sword.offer(enchantmentData);
 
         defaultWayNode.getNode("mySword").setValue(TypeToken.of(ItemStack.class), sword);
@@ -85,7 +85,6 @@ public class ConfigsExample {
         // Пример с сериализатором
         // глобальная регистрация(так не делать, если не знаешь, зачем надо)
         //TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(MyObject.class), new MyObjectSerializer());
-
         TypeSerializerCollection serializers = TypeSerializers.getDefaultSerializers().newChild();
         serializers.registerType(TypeToken.of(MyObject.class), new MyObjectSerializer());
         ConfigurationOptions opts = ConfigurationOptions.defaults().setSerializers(serializers);
@@ -114,6 +113,22 @@ public class ConfigsExample {
         logger.info(String.valueOf(myEnhancedObject));
 
         localLoader.save(guiceMapperNode);
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Пример с сериализатором и Set<?>
+        ConfigurationOptions setOpts = opts.setSerializers(serializers.registerType(new TypeToken<Set<?>>() {}, new SetSerializer()));
+        CommentedConfigurationNode setNode = localLoader.load(setOpts);
+        Set<MyObject> myObjects = new HashSet<>();
+        for (int i = 0; i < 4; i++) {
+            MyObject obj1 = new MyObject("string" + i, i, ItemStack.of(ItemTypes.LOG, i));
+            myObjects.add(obj1);
+        }
+        setNode.getNode("mySet").setValue(new TypeToken<Set<MyObject>>() {}, myObjects);
+
+        Set<MyObject> mySet = setNode.getNode("mySet").getValue(new TypeToken<Set<MyObject>>() {});
+        logger.info(String.valueOf(mySet));
+
+        localLoader.save(setNode);
         /////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
