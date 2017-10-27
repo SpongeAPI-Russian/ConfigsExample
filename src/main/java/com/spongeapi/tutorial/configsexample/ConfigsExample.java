@@ -54,6 +54,7 @@ public class ConfigsExample {
         logger.info(String.valueOf(defaultWayNode.getNode("test", "node").getValue()));
         localLoader.save(defaultWayNode);
         /////////////////////////////////////////////////////////////////////////////////////////////////
+
         // Установить список, сохранить, получить.
         List<String> strings = new ArrayList<>();
         strings.add("Sanya");
@@ -127,6 +128,21 @@ public class ConfigsExample {
 
         Set<MyObject> mySet = setNode.getNode("mySet").getValue(new TypeToken<Set<MyObject>>() {});
         logger.info(String.valueOf(mySet));
+
+        localLoader.save(setNode);
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Пример с сериализатором и List<MyObject>
+        CommentedConfigurationNode listNode = localLoader.load(opts);
+        List<MyObject> list = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            MyObject obj1 = new MyObject("string" + i, i, ItemStack.of(ItemTypes.LOG, i));
+            list.add(obj1);
+        }
+        setNode.getNode("myList").setValue(new TypeToken<List<MyObject>>() {}, list);
+
+        List<MyObject> myList = listNode.getNode("myList").getList(TypeToken.of(MyObject.class));
+        logger.info(String.valueOf(myList));
 
         localLoader.save(setNode);
         /////////////////////////////////////////////////////////////////////////////////////////////////
